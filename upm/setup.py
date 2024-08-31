@@ -12,9 +12,9 @@ CHANGELOG_FILENAME_KEY = "CHANGELOG_FILENAME"
 VENV_DIR = ".venv"
 DOTENV_FILE = '.env'
 VSCODE_DIR = '.vscode'
-CONFIG_PATH = os.path.join(os.getcwd(), 'scripts','config.json')
-LAUNCH_TEMPLATE_PATH = os.path.join(os.getcwd(), 'scripts', 'launch.template')
-TASKS_TEMPLATE_PATH = os.path.join(os.getcwd(), 'scripts', 'tasks.template')
+CONFIG_PATH = os.path.join(os.getcwd(), 'upm','config.json')
+LAUNCH_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'launch.template')
+TASKS_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'tasks.template')
 REQUIREMENTS_FILE = 'requirements.txt'
 
 def create_virtualenv(venv_path):
@@ -133,8 +133,8 @@ def create_build_tasks(env_vars):
 
     project_name = env_vars[PROJECT_NAME_KEY]
 
-    build_script = os.path.join(os.getcwd(), 'scripts', 'build.py')
-    changelog_script = os.path.join(os.getcwd(), 'scripts', 'changelog.py')
+    build_script = os.path.join(os.getcwd(), 'upm', 'build.py')
+    changelog_script = os.path.join(os.getcwd(), 'upm', 'changelog.py')
 
     system = platform.system()
 

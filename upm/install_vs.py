@@ -58,7 +58,7 @@ def install_visual_studio():
     component_args = " ".join([f"--add {component}" for component in components])
 
     command = (
-        f'"{vs_installer_path}" --quiet --wait '
+        f'"{vs_installer_path}" --wait '
         f'--addProductLang en-US '
         f'{workload_args} '
         f'{component_args} '
