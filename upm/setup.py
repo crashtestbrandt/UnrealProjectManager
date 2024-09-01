@@ -292,7 +292,7 @@ def create_build_tasks(env_vars):
     with open(os.path.join(vscode_dir, 'tasks.json'), 'w') as tasks_file:
         json.dump(build_tasks, tasks_file, indent=4)
 
-    print(f'Created launch tasks in {os.path.join(vscode_dir, "build.json")}')
+    print(f'Created build tasks in {os.path.join(vscode_dir, "build.json")}')
     return build_tasks
 
 def create_code_workspace(env_vars):
@@ -394,13 +394,8 @@ def clean_project(env_vars):
 
     print(f"Project cleaned; {env_vars[PROJECT_NAME_KEY]}.code-workspace still exists and can be overwritten with \'setup.py\' if needed.")
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Setup VS Code environment for Unreal project.")
-    parser.add_argument('--clean', action='store_true', help="Clean all generated files and directories.")
-    args = parser.parse_args()
-
-    # Load config file from .vscode/config.json if it exists, otherwise use the default config.json
-    config_override_path = os.path.join(os.getcwd(), VSCODE_DIR, 'config.json')
+def setup(args):
+    config_override_path = os.path.join(os.getcwd(), '.vscode', 'config.json')
 
     if os.path.exists(config_override_path):
         env_vars = load_config(config_override_path)
@@ -411,13 +406,13 @@ if __name__ == '__main__':
     
     if args.clean:
         clean_project(env_vars)
-        exit(0)
+        sys.exit(0)
 
-    venv_path = os.path.join(os.getcwd(), VENV_DIR)
+    venv_path = os.path.join(os.getcwd(), '.venv')
     if os.path.exists(venv_path):
         raise Exception(f"Virtual environment already exists at {venv_path}. Run with --clean to remove it.")
     
-    requirements_file = os.path.join(os.getcwd(), REQUIREMENTS_FILE)
+    requirements_file = os.path.join(os.getcwd(), 'requirements.txt')
 
     create_virtualenv(venv_path)
     install_dependencies(venv_path, requirements_file)

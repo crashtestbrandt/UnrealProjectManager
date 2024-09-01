@@ -14,8 +14,16 @@ def is_admin():
 
 def run_as_admin():
     if sys.version_info >= (3, 5):
-        # Ensure that the script is run with elevated privileges
-        subprocess.run(['powershell', 'Start-Process', sys.executable, '-ArgumentList', '"{}"'.format(' '.join(sys.argv)), '-Verb', 'runAs'], shell=True)
+        # Check if the script is run as a module
+        module_flag = "-m" if hasattr(sys, 'frozen') else ""
+        # Command to re-run the script with elevated privileges
+        cmd = [
+            'powershell', 
+            'Start-Process', sys.executable, 
+            '-ArgumentList', f'"{module_flag} {__name__} {" ".join(sys.argv[1:])}"', 
+            '-Verb', 'runAs'
+        ]
+        subprocess.run(cmd, shell=True)
     else:
         raise RuntimeError("Python 3.5+ is required to run this script.")
 
@@ -62,7 +70,7 @@ def install_visual_studio():
         f'--addProductLang en-US '
         f'{workload_args} '
         f'{component_args} '
-        f'--includeRecommended --includeOptional'
+        f'--includeRecommended --includeOptional --noStartAfterInstall'
     )
 
     try:
