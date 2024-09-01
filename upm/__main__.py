@@ -50,6 +50,7 @@ def main():
 
     parser_setup = subparsers.add_parser('install-vscode', help='Download and install Visual Studio Code.')
     parser_setup = subparsers.add_parser('install-vs', help='Download and install Visual Studio Community (prompts for admin privileges).')
+    parser_setup = subparsers.add_parser('install-xcode', help='Download and install XCode.')
 
     parser_setup = subparsers.add_parser('upmcopy', help='Copy upm files to a destination folder.')
     parser_setup.add_argument('--dir', type=create_directory, help='Destination folder.', required=True)
