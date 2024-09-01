@@ -3,9 +3,9 @@
         "Version": "0.1.0",
         "PrereleaseType": "Beta",
         "Changes": [
-            "Test build tasks with Windows and Mac projects."
+            "Example change"
         ],
         "ReleaseDate": "2024-08-31",
-        "Commit": "944450a678e4936db86da04ac1c0d20e51566b22"
+        "Commit": "c09d4d365cfe0ccb38854337067305cf663e13d7"
     }
 ]
