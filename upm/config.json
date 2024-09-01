@@ -1,0 +1,20 @@
+{
+    "windows": {
+        "PROJECT_NAME": "Moonshot",
+        "WORKSPACE_NAME": "Moonshot.code-workspace",
+        "UNREAL_PATH": "C:\\Program Files\\Epic Games\\UE_5.4",
+        "CHANGELOG_FILENAME": "Changelog.json"  
+    },
+    "linux": {
+        "PROJECT_NAME": "Moonshot",
+        "WORKSPACE_NAME": "Moonshot.code-workspace",
+        "UNREAL_PATH": "/home/username/.local/share/UnrealEngine",
+        "CHANGELOG_FILENAME": "Changelog.json"
+    },
+    "macos": {
+        "PROJECT_NAME": "Moonshot",
+        "WORKSPACE_NAME": "Moonshot.code-workspace",
+        "UNREAL_PATH": "/Users/Shared/Epic Games/UE_5.4",
+        "CHANGELOG_FILENAME": "Changelog.json"
+    }
+}
