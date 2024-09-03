@@ -43,14 +43,12 @@ def load_config(config_file):
         config = json.load(f)
 
     system = platform.system()
+    
+    if not (system == 'Windows' or system == 'Darwin'):
+        system = 'Linux'
 
-    env_vars = None
-    if system == 'Windows':
-        env_vars = config['windows']
-    elif system == 'Darwin':  # macOS
-        env_vars = config['macos']
-    else:  # Assuming Linux or other Unix-like OS
-        env_vars = config['linux']
+    env_vars = config[system]
+
 
     with open(DOTENV_FILE, 'w') as env_file:
         for key, value in env_vars.items():
