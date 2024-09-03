@@ -5,6 +5,8 @@ import sys
 import json
 
 PROJECT_NAME_KEY = "PROJECT_NAME"
+GAME_NAME_KEY = "GAME_NAME"
+EDITOR_NAME_KEY = "EDITOR_NAME"
 WORKSPACE_NAME_KEY = "WORKSPACE_NAME"
 UNREAL_PATH_KEY = "UNREAL_PATH"
 CHANGELOG_FILENAME_KEY = "CHANGELOG_FILENAME"
@@ -71,12 +73,12 @@ def create_launch_tasks(env_vars):
 
     if system == 'Windows':
         editor_path = os.path.join(env_vars[UNREAL_PATH_KEY], 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe')
-        exec_path = os.path.join(os.getcwd(), 'Binaries', 'Win64', f"{project_name}.exe")
+        exec_path = os.path.join(os.getcwd(), 'Binaries', 'Win64', f"{env_vars[GAME_NAME_KEY]}.exe")
         visualizer_path = os.path.join(env_vars[UNREAL_PATH_KEY], 'Engine', 'Extras', 'VisualStudioDebugging', 'Unreal.natvis')
         type_val = "cppvsdbg"
     elif system == 'Darwin':  # macOS
         editor_path = os.path.join(env_vars[UNREAL_PATH_KEY], 'Engine', 'Binaries', 'Mac', 'UnrealEditor.app', 'Contents', 'MacOS', 'UnrealEditor')
-        exec_path = os.path.join(os.getcwd(), 'Binaries', 'Mac', f"{project_name}.app", 'Contents', 'MacOS', f"{project_name}")
+        exec_path = os.path.join(os.getcwd(), 'Binaries', 'Mac', f"{project_name}.app", 'Contents', 'MacOS', f"{env_vars[GAME_NAME_KEY]}")
         type_val = "lldb"
         visualizer_path = None
     else:  # Assuming Linux or other Unix-like OS
@@ -106,7 +108,7 @@ def create_launch_tasks(env_vars):
     })
 
     launch_tasks['configurations'].append({
-        "name": f"Launch {project_name} (Development)",
+        "name": f"Launch {env_vars[GAME_NAME_KEY]} (Development)",
         "request": "launch",
         "program": exec_path,
         "stopAtEntry": False,
@@ -206,7 +208,7 @@ def create_build_tasks(env_vars):
             "--build-type",
             'Development',
             "--target-name",
-            f"{project_name}",
+            f"{env_vars[GAME_NAME_KEY]}",
             "--project-dir",
             "${workspaceFolder}",
             "--package",
@@ -279,8 +281,8 @@ def create_build_tasks(env_vars):
         "description": "Choose target.",
         "default": f"{project_name}",
         "options": [
-            f"{project_name}",
-            f"{project_name}Editor"
+            env_vars[GAME_NAME_KEY],
+            env_vars[EDITOR_NAME_KEY]
         ]
     })
 
@@ -403,8 +405,6 @@ def generate_project_files(env_vars):
     if system == 'Windows':
         if not os.path.exists(os.path.join(unreal_path, UBT_EXEC_PATH)):
             build_ubt = True
-        batch_files_path = os.path.join('Engine', 'Build', 'BatchFiles')
-        ubt_script = os.path.join(unreal_path, batch_files_path, 'RunUBT.bat')
     
     elif system == 'Darwin':  # macOS
         batch_files_path = os.path.join('Engine', 'Build', 'BatchFiles', 'Mac')

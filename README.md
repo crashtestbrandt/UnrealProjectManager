@@ -18,6 +18,8 @@ A lightweight Python module for managing Unreal projects across space, time, and
 
 - [Prerequisites](#prerequisites)
 
+- [Quickstart](#quickstart)
+
 - [Configuration](#configuration)
 
 - [Setup](#setup)
@@ -37,6 +39,27 @@ A lightweight Python module for managing Unreal projects across space, time, and
 - [Python 3.10+](#installing-python)
 
 - [Unreal Engine 5+](#installing-unreal)
+
+## Quickstart
+
+1. Download and install [prerequisites](#prerequisites).
+
+1. Clone UPM:
+
+    **TODO**: This will be replaced with `pip install`.
+
+    `git clone https://github.com/crashtestbrandt/UnrealProjectManager.git`
+
+1. Navigate to cloned UPM directory and use UPM to configure your project:
+
+    `upm config --dir [project-path] --project-name [project-name]`
+
+1. Navigate to your project directory and use UPM to perform project setup and generate project files:
+
+    `upm setup`
+
+1. 
+
 
 ## Configuration
 
@@ -80,8 +103,6 @@ Do `upm config -h` to see options for modifying the default behavior of `upm con
 ## Setup
 
 
-
-*TODO*
 
 ### Existing Unreal Project
 

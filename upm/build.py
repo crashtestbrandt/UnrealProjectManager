@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 DOTENV_PATH = '.env'
 UNREAL_PATH_KEY = 'UNREAL_PATH'
 PROJECT_NAME_KEY = 'PROJECT_NAME'
+GAME_NAME_KEY = 'GAME_NAME'
+EDITOR_NAME_KEY = 'EDITOR_NAME'
 ARCHIVE_DIRECTORY = 'Packages'
 DEFAULT_BUILD_TYPE = 'Development'
 
@@ -20,7 +22,7 @@ def build_project(project_dir, target_name, build_type=DEFAULT_BUILD_TYPE, build
     if UNREAL_PATH is None:
         raise Exception(f"Environment variable {UNREAL_PATH} not set")
 
-    project_filepath = os.path.join(project_dir, f"{target_name}.uproject")
+    project_filepath = os.path.join(project_dir, os.getenv(PROJECT_NAME_KEY) + '.uproject')
 
     if system == 'Windows':
         batch_files_path = os.path.join('Engine', 'Build', 'BatchFiles')
@@ -62,7 +64,7 @@ def build_project(project_dir, target_name, build_type=DEFAULT_BUILD_TYPE, build
         ]
     
     if package:
-        if target_name == f"{os.getenv(PROJECT_NAME_KEY)}Editor":
+        if target_name == os.getenv(EDITOR_NAME_KEY):
             raise Exception("Cannot package editor target")
         
         print(f"Packaging {build_type} target with Unreal Engine at {UNREAL_PATH}")
@@ -99,7 +101,7 @@ if __name__ == "__main__":
     parser.add_argument('--build-type', type=str, required=True,
                         help="Type of build (debug, development, testomg. release)")
     parser.add_argument('--target-name', type=str, required=True,
-                        help="Type of build (debug, development, testomg. release)")
+                        help=f"Name of build target, e.g. {os.getenv(PROJECT_NAME_KEY)}Editor")
     parser.add_argument('--clean', action='store_true',
                         help="Clean selected targets")
     parser.add_argument('--build', action='store_true',
