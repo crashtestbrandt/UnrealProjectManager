@@ -1,0 +1,33 @@
+{
+    "folders": [
+        {
+            "name": "Moonshot",
+            "path": "."
+        },
+        {
+            "name": "UE5",
+            "path": "C:\\Program Files\\Epic Games\\UE_5.4"
+        }
+    ],
+    "settings": {
+        "typescript.tsc.autoDetect": "off",
+        "npm.autoDetect": "off",
+        "search.exclude": {
+            ".venv/**": true
+        },
+        "python.analysis.exclude": [
+            ".venv/**"
+        ],
+        "dotnet.defaultSolution": "Moonshot\\Moonshot.sln"
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-vscode.cpptools",
+            "ms-dotnettools.csharp",
+            "ms-vscode.powershell",
+            "ms-python.python",
+            "ms-vscode.cpptools-extension-pack",
+            "ms-dotnettools.csdevkit"
+        ]
+    }
+}

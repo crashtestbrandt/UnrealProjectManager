@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch MoonshotEditor (Development)",
+            "request": "launch",
+            "program": "C:\\Program Files\\Epic Games\\UE_5.4\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
+            "args": [
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\Moonshot.uproject"
+            ],
+            "stopAtEntry": false,
+            "console": "integratedTerminal",
+            "type": "cppvsdbg",
+            "visualizerFile": "C:\\Program Files\\Epic Games\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+            "sourceFileMap": {
+                "D:\\build\\++UE5\\Sync": "C:\\Program Files\\Epic Games\\UE_5.4"
+            }
+        },
+        {
+            "name": "Launch Moonshot (Development)",
+            "request": "launch",
+            "program": "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\Binaries\\Win64\\Moonshot.exe",
+            "stopAtEntry": false,
+            "console": "integratedTerminal",
+            "type": "cppvsdbg",
+            "visualizerFile": "C:\\Program Files\\Epic Games\\UE_5.4\\Engine\\Extras\\VisualStudioDebugging\\Unreal.natvis",
+            "sourceFileMap": {
+                "D:\\build\\++UE5\\Sync": "C:\\Program Files\\Epic Games\\UE_5.4"
+            }
+        }
+    ],
+    "inputs": []
+}

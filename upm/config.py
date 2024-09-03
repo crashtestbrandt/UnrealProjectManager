@@ -14,11 +14,55 @@ GITIGNORE_SRCFILE = "gitignore.upm"
 GITIGNORE_DSTFILE = ".gitignore"
 UPM_DIR = os.path.normpath(os.path.abspath(os.path.dirname(__file__)))
 
-def load_config_template():
-    with open(os.path.join(UPM_DIR, CONFIG_FILENAME), 'r') as f:
-        return json.load(f)
+def clean(args):
+    upm_dir_path = os.path.join(args.dir, "upm")
+    config_file_path = os.path.join(args.dir, CONFIG_FILENAME)
+    gitignore_file_path = os.path.join(args.dir, GITIGNORE_DSTFILE)
+    changelog_file_path = os.path.join(args.dir, args.changelog)
+
+    # Remove the "upm" directory
+    if os.path.exists(upm_dir_path):
+        shutil.rmtree(upm_dir_path)
+        print(f"Removed directory: {upm_dir_path}")
+    else:
+        print(f"Directory not found, skipping: {upm_dir_path}")
+
+    # Remove the config file
+    if os.path.exists(config_file_path):
+        os.remove(config_file_path)
+        print(f"Removed file: {config_file_path}")
+    else:
+        print(f"File not found, skipping: {config_file_path}")
+
+    # Remove the .gitignore file
+    if os.path.exists(gitignore_file_path):
+        os.remove(gitignore_file_path)
+        print(f"Removed file: {gitignore_file_path}")
+    else:
+        print(f"File not found, skipping: {gitignore_file_path}")
+
+    # Remove the changelog file
+    if os.path.exists(changelog_file_path):
+        os.remove(changelog_file_path)
+        print(f"Removed file: {changelog_file_path}")
+    else:
+        print(f"File not found, skipping: {changelog_file_path}")
+
+    print(f"Config cleanup complete. Run 'upm setup --clean' from {args.dir} to remove generated setup files.")
+
+def load_config_template(args):
+    if args.file:
+        with open(args.file, 'r') as f:
+            return json.load(f)
+    else:
+        with open(os.path.join(UPM_DIR, CONFIG_FILENAME), 'r') as f:
+            return json.load(f)
 
 def config(args):
+    if args.clean:
+        clean(args)
+        return
+
     shutil.copytree(
         UPM_DIR,
         os.path.join(args.dir, "upm"),
@@ -26,7 +70,7 @@ def config(args):
         )
     print(f"Copied UPM scripts to {os.path.join(args.dir, 'upm')}")
     
-    if args.gitignore:
+    if not args.nogitignore:
         shutil.copy(
             os.path.join(UPM_DIR, GITIGNORE_SRCFILE),
             os.path.join(args.dir, GITIGNORE_DSTFILE)
@@ -35,7 +79,7 @@ def config(args):
     else:
         print("Skipping .gitignore file.")
     
-    config = load_config_template()
+    config = load_config_template(args)
 
     system = platform.system()
 

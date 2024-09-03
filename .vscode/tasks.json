@@ -1,0 +1,142 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Moonshot Select-A-Build",
+            "group": "build",
+            "command": "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python",
+            "args": [
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\build.py",
+                "--build-type",
+                "${input:buildType}",
+                "--target-name",
+                "${input:targetName}",
+                "--project-dir",
+                "${workspaceFolder}",
+                "--build"
+            ],
+            "problemMatcher": "$msCompile",
+            "type": "shell"
+        },
+        {
+            "label": "Moonshot Select-A-Clean",
+            "group": "build",
+            "command": "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python",
+            "args": [
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\build.py",
+                "--build-type",
+                "${input:buildType}",
+                "--target-name",
+                "${input:targetName}",
+                "--project-dir",
+                "${workspaceFolder}",
+                "--clean"
+            ],
+            "problemMatcher": "$msCompile",
+            "type": "shell"
+        },
+        {
+            "label": "Moonshot Development Package",
+            "group": "build",
+            "command": "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python",
+            "args": [
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\build.py",
+                "--build-type",
+                "Development",
+                "--target-name",
+                "Moonshot",
+                "--project-dir",
+                "${workspaceFolder}",
+                "--package"
+            ],
+            "problemMatcher": "$msCompile",
+            "type": "shell"
+        },
+        {
+            "label": "Changelog: Add Version",
+            "type": "shell",
+            "command": "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python",
+            "args": [
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\changelog.py",
+                "--add-version"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Changelog: Add Change",
+            "type": "shell",
+            "command": "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python",
+            "args": [
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\changelog.py",
+                "--add-change",
+                "${input:changeDescription}"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Changelog: Update README",
+            "type": "shell",
+            "command": "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python",
+            "args": [
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\changelog.py",
+                "--update-readme"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Changelog: Update INI",
+            "type": "shell",
+            "command": "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python",
+            "args": [
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\changelog.py",
+                "--update-ini"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Changelog: Prebuild Updates",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "/c",
+                "C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\changelog.py --update-ini && C:\\Users\\thisi\\Repos\\UnrealProjectManager\\.venv\\Scripts\\python C:\\Users\\thisi\\Repos\\UnrealProjectManager\\upm\\changelog.py --update-readme && copy Changelog.json .\\Content\\Moonshot\\Data"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "targetName",
+            "type": "pickString",
+            "description": "Choose target.",
+            "default": "Moonshot",
+            "options": [
+                "Moonshot",
+                "MoonshotEditor"
+            ]
+        },
+        {
+            "id": "buildType",
+            "type": "pickString",
+            "description": "Type of build.",
+            "default": "Development",
+            "options": [
+                "Development",
+                "Debug",
+                "DebugGame",
+                "Test",
+                "Shipping"
+            ]
+        },
+        {
+            "id": "changeDescription",
+            "type": "promptString",
+            "description": "Enter the change description"
+        }
+    ]
+}
