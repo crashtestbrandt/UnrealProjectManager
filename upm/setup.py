@@ -3,7 +3,6 @@ import platform
 import subprocess
 import sys
 import json
-import argparse
 
 PROJECT_NAME_KEY = "PROJECT_NAME"
 WORKSPACE_NAME_KEY = "WORKSPACE_NAME"
@@ -12,9 +11,9 @@ CHANGELOG_FILENAME_KEY = "CHANGELOG_FILENAME"
 VENV_DIR = ".venv"
 DOTENV_FILE = '.env'
 VSCODE_DIR = '.vscode'
-CONFIG_PATH = os.path.join(os.getcwd(), 'upm','config.json')
-LAUNCH_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'launch.template')
-TASKS_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'tasks.template')
+CONFIG_PATH = os.path.join(os.getcwd(), 'upm','config.upm')
+LAUNCH_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'launch.upm')
+TASKS_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'tasks.upm')
 REQUIREMENTS_FILE = 'requirements.txt'
 
 def create_virtualenv(venv_path):
@@ -192,6 +191,24 @@ def create_build_tasks(env_vars):
             "--project-dir",
             "${workspaceFolder}",
             "--clean",
+        ],
+        "problemMatcher": "$msCompile",
+        "type": "shell"
+    })
+
+    build_tasks['tasks'].append({
+        "label": f"{project_name} Development Package",
+        "group": "build",
+        "command": python_cmd,
+        "args": [
+            build_script,
+            "--build-type",
+            'Development',
+            "--target-name",
+            f"{project_name}",
+            "--project-dir",
+            "${workspaceFolder}",
+            "--package",
         ],
         "problemMatcher": "$msCompile",
         "type": "shell"
@@ -395,7 +412,7 @@ def clean_project(env_vars):
     print(f"Project cleaned; {env_vars[PROJECT_NAME_KEY]}.code-workspace still exists and can be overwritten with \'setup.py\' if needed.")
 
 def setup(args):
-    config_override_path = os.path.join(os.getcwd(), '.vscode', 'config.json')
+    config_override_path = os.path.join(os.getcwd(), '.vscode', 'config.upm')
 
     if os.path.exists(config_override_path):
         env_vars = load_config(config_override_path)
