@@ -3,19 +3,23 @@ import platform
 import subprocess
 import sys
 import json
-import argparse
 
 PROJECT_NAME_KEY = "PROJECT_NAME"
+GAME_NAME_KEY = "GAME_NAME"
+EDITOR_NAME_KEY = "EDITOR_NAME"
 WORKSPACE_NAME_KEY = "WORKSPACE_NAME"
 UNREAL_PATH_KEY = "UNREAL_PATH"
 CHANGELOG_FILENAME_KEY = "CHANGELOG_FILENAME"
 VENV_DIR = ".venv"
 DOTENV_FILE = '.env'
 VSCODE_DIR = '.vscode'
-CONFIG_PATH = os.path.join(os.getcwd(), 'upm','config.json')
-LAUNCH_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'launch.template')
-TASKS_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'tasks.template')
+CONFIG_PATH = os.path.join(os.getcwd(),'config.upm')
+LAUNCH_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'launch.upm')
+TASKS_TEMPLATE_PATH = os.path.join(os.getcwd(), 'upm', 'tasks.upm')
 REQUIREMENTS_FILE = 'requirements.txt'
+
+UBT_SOURCE_PATH = os.path.join('Engine', 'Source', 'Programs', 'UnrealBuildTool')
+UBT_EXEC_PATH = os.path.join('Engine', 'Binaries', 'DotNET', 'UnrealBuildTool', 'UnrealBuildTool.exe')
 
 def create_virtualenv(venv_path):
     print(f'Creating virtual environment at {venv_path}...')
@@ -45,13 +49,11 @@ def load_config(config_file):
 
     system = platform.system()
 
-    env_vars = None
-    if system == 'Windows':
-        env_vars = config['windows']
-    elif system == 'Darwin':  # macOS
-        env_vars = config['macos']
-    else:  # Assuming Linux or other Unix-like OS
-        env_vars = config['linux']
+    if not (system == 'Windows' or system == 'Darwin'):
+        system = 'Linux'
+
+    env_vars = config[system]
+
 
     with open(DOTENV_FILE, 'w') as env_file:
         for key, value in env_vars.items():
@@ -71,12 +73,12 @@ def create_launch_tasks(env_vars):
 
     if system == 'Windows':
         editor_path = os.path.join(env_vars[UNREAL_PATH_KEY], 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe')
-        exec_path = os.path.join(os.getcwd(), 'Binaries', 'Win64', f"{project_name}.exe")
+        exec_path = os.path.join(os.getcwd(), 'Binaries', 'Win64', f"{env_vars[GAME_NAME_KEY]}.exe")
         visualizer_path = os.path.join(env_vars[UNREAL_PATH_KEY], 'Engine', 'Extras', 'VisualStudioDebugging', 'Unreal.natvis')
         type_val = "cppvsdbg"
     elif system == 'Darwin':  # macOS
         editor_path = os.path.join(env_vars[UNREAL_PATH_KEY], 'Engine', 'Binaries', 'Mac', 'UnrealEditor.app', 'Contents', 'MacOS', 'UnrealEditor')
-        exec_path = os.path.join(os.getcwd(), 'Binaries', 'Mac', f"{project_name}.app", 'Contents', 'MacOS', f"{project_name}")
+        exec_path = os.path.join(os.getcwd(), 'Binaries', 'Mac', f"{project_name}.app", 'Contents', 'MacOS', f"{env_vars[GAME_NAME_KEY]}")
         type_val = "lldb"
         visualizer_path = None
     else:  # Assuming Linux or other Unix-like OS
@@ -106,7 +108,7 @@ def create_launch_tasks(env_vars):
     })
 
     launch_tasks['configurations'].append({
-        "name": f"Launch {project_name} (Development)",
+        "name": f"Launch {env_vars[GAME_NAME_KEY]} (Development)",
         "request": "launch",
         "program": exec_path,
         "stopAtEntry": False,
@@ -198,6 +200,24 @@ def create_build_tasks(env_vars):
     })
 
     build_tasks['tasks'].append({
+        "label": f"{project_name} Development Package",
+        "group": "build",
+        "command": python_cmd,
+        "args": [
+            build_script,
+            "--build-type",
+            'Development',
+            "--target-name",
+            f"{env_vars[GAME_NAME_KEY]}",
+            "--project-dir",
+            "${workspaceFolder}",
+            "--package",
+        ],
+        "problemMatcher": "$msCompile",
+        "type": "shell"
+    })
+
+    build_tasks['tasks'].append({
         "label": "Changelog: Add Version",
         "type": "shell",
         "command": python_cmd,
@@ -261,8 +281,8 @@ def create_build_tasks(env_vars):
         "description": "Choose target.",
         "default": f"{project_name}",
         "options": [
-            f"{project_name}",
-            f"{project_name}Editor"
+            env_vars[GAME_NAME_KEY],
+            env_vars[EDITOR_NAME_KEY]
         ]
     })
 
@@ -302,7 +322,7 @@ def create_code_workspace(env_vars):
     system = platform.system()
 
     if system == 'Windows':
-        native_codeproj = os.path.join(project_name, project_name + '.sln')
+        native_codeproj = os.path.join(project_name, project_name + '.generated.sln')
     elif system == 'Darwin':  # macOS
         native_codeproj = None
     else:  # Assuming Linux or other Unix-like OS
@@ -351,6 +371,68 @@ def create_code_workspace(env_vars):
 
     return code_workspace
 
+def build_unreal_build_tool(env_vars):
+    unreal_path = env_vars[UNREAL_PATH_KEY]
+    ubt_proj_file = os.path.join(unreal_path, UBT_SOURCE_PATH, 'UnrealBuildTool.csproj')
+    if not os.path.exists(unreal_path):
+        raise Exception(f"Unreal Engine not found at {unreal_path}")
+    if not os.path.exists(ubt_proj_file):
+        raise Exception(f"UnrealBuildTool.csproj not found at {ubt_proj_file}")
+    print(f"Building Unreal Build Tool from source using {ubt_proj_file}...")
+    subprocess_list = [
+        'dotnet',
+        'build',
+        ubt_proj_file,
+        '-c',
+        'Development', 
+    ]
+    try:
+        subprocess.check_call(subprocess_list, cwd=os.path.join(unreal_path, UBT_SOURCE_PATH))
+        print("Built Unreal Build Tool successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error building Unreal Build Tool: {e}")
+        sys.exit(1)
+
+def generate_project_files(env_vars):
+    unreal_path = env_vars[UNREAL_PATH_KEY]
+    project_name = env_vars[PROJECT_NAME_KEY]
+
+    project_filepath = os.path.join(os.getcwd(), f"{project_name}.uproject")
+
+    system = platform.system()
+
+    build_ubt = False
+    if system == 'Windows':
+        if not os.path.exists(os.path.join(unreal_path, UBT_EXEC_PATH)):
+            build_ubt = True
+    
+    elif system == 'Darwin':  # macOS
+        batch_files_path = os.path.join('Engine', 'Build', 'BatchFiles', 'Mac')
+        ubt_script = os.path.join(unreal_path, batch_files_path, 'RunUBT.sh')
+        if not os.path.exists(ubt_script):
+            build_ubt = True
+    
+    else:   # Linux
+        print("TODO: Linux")
+    
+    if build_ubt:
+        print(f"Unreal Build Tool not found at {os.path.join(unreal_path, UBT_EXEC_PATH)}")
+        build_unreal_build_tool(env_vars)
+    
+    print(f"Generating project files for {project_filepath} with Unreal Engine at {unreal_path} ...")
+    subprocess_list = [
+        os.path.join(unreal_path, UBT_EXEC_PATH),
+        '-projectfiles',
+        '-project={}'.format(project_filepath),
+        '-game',
+        '-engine',
+        '-dotnet',
+        '-vscode'
+    ]
+
+    subprocess.check_call(subprocess_list)
+    print(f"Generated project files for {project_filepath}")
+
 def clean_project(env_vars):
     system = platform.system()
 
@@ -392,10 +474,10 @@ def clean_project(env_vars):
     #    subprocess.check_call(rm_workspace_list, shell=True)
     #    print(f"Removed {env_vars[PROJECT_NAME_KEY]}.code-workspace")
 
-    print(f"Project cleaned; {env_vars[PROJECT_NAME_KEY]}.code-workspace still exists and can be overwritten with \'setup.py\' if needed.")
+    print(f"Project cleaned; {env_vars[PROJECT_NAME_KEY]}.code-workspace still exists and can be overwritten with \'upm setup\' if needed.")
 
 def setup(args):
-    config_override_path = os.path.join(os.getcwd(), '.vscode', 'config.json')
+    config_override_path = os.path.join(os.getcwd(), '.vscode', 'config.upm')
 
     if os.path.exists(config_override_path):
         env_vars = load_config(config_override_path)
@@ -409,13 +491,22 @@ def setup(args):
         sys.exit(0)
 
     venv_path = os.path.join(os.getcwd(), '.venv')
-    if os.path.exists(venv_path):
-        raise Exception(f"Virtual environment already exists at {venv_path}. Run with --clean to remove it.")
     
-    requirements_file = os.path.join(os.getcwd(), 'requirements.txt')
+    requirements_file = os.path.join(os.getcwd(), 'upm', 'requirements.txt')
 
-    create_virtualenv(venv_path)
-    install_dependencies(venv_path, requirements_file)
+    if not args.novenv and not os.path.exists(venv_path):
+        print(f"No virtual environment found at {venv_path}.")
+        create_virtualenv(venv_path)
+    else:
+        print(f"Skipping virtual environment creation.")
+    
+    if args.novenv:
+        print(f"Skipping dependency installation.")
+    else:
+        install_dependencies(venv_path, requirements_file)
+        
+    if not args.noprojfiles:
+        generate_project_files(env_vars);
 
     create_launch_tasks(env_vars)
     create_build_tasks(env_vars)

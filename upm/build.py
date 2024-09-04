@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 
 DOTENV_PATH = '.env'
 UNREAL_PATH_KEY = 'UNREAL_PATH'
+PROJECT_NAME_KEY = 'PROJECT_NAME'
+GAME_NAME_KEY = 'GAME_NAME'
+EDITOR_NAME_KEY = 'EDITOR_NAME'
 ARCHIVE_DIRECTORY = 'Packages'
 DEFAULT_BUILD_TYPE = 'Development'
 
@@ -19,7 +22,7 @@ def build_project(project_dir, target_name, build_type=DEFAULT_BUILD_TYPE, build
     if UNREAL_PATH is None:
         raise Exception(f"Environment variable {UNREAL_PATH} not set")
 
-    project_path = os.path.join(project_dir, 'Moonshot.uproject')
+    project_filepath = os.path.join(project_dir, os.getenv(PROJECT_NAME_KEY) + '.uproject')
 
     if system == 'Windows':
         batch_files_path = os.path.join('Engine', 'Build', 'BatchFiles')
@@ -45,7 +48,7 @@ def build_project(project_dir, target_name, build_type=DEFAULT_BUILD_TYPE, build
             target_name,
             platform_name,
             build_type,
-            project_path,
+            project_filepath,
             '-waitmutex'
         ]
 
@@ -56,12 +59,12 @@ def build_project(project_dir, target_name, build_type=DEFAULT_BUILD_TYPE, build
             target_name,
             platform_name,
             build_type,
-            project_path,
+            project_filepath,
             '-waitmutex'
         ]
     
     if package:
-        if target_name == 'MoonshotEditor':
+        if target_name == os.getenv(EDITOR_NAME_KEY):
             raise Exception("Cannot package editor target")
         
         print(f"Packaging {build_type} target with Unreal Engine at {UNREAL_PATH}")
@@ -71,7 +74,7 @@ def build_project(project_dir, target_name, build_type=DEFAULT_BUILD_TYPE, build
             '-noP4',
             '-utf8output',
             '-cook',
-            '-project={}'.format(project_path),
+            '-project={}'.format(project_filepath),
             '-target={}'.format(target_name),
             '-platform={}'.format(platform_name),
             '-stage',
@@ -82,7 +85,7 @@ def build_project(project_dir, target_name, build_type=DEFAULT_BUILD_TYPE, build
             '-pak',
             '-iostore',
             '-prereqs',
-            '-archivedirectory={}}'.format(os.path.join(project_path, ARCHIVE_DIRECTORY, platform.system())),
+            '-archivedirectory={}'.format(os.path.join(project_dir, ARCHIVE_DIRECTORY, platform.system())),
             '-manifests',
             '-nocompileuat',
             '-waitmutex'
@@ -91,14 +94,14 @@ def build_project(project_dir, target_name, build_type=DEFAULT_BUILD_TYPE, build
     subprocess.check_call(subprocess_list)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Build commands for Moonshot project")
+    parser = argparse.ArgumentParser(description=f"Build commands for {os.getenv(PROJECT_NAME_KEY)} project")
 
     parser.add_argument('--project-dir', type=str, required=True,
-                        help="Path to the Moonshot project directory")
+                        help=f"Path to the {os.getenv(PROJECT_NAME_KEY)} project directory")
     parser.add_argument('--build-type', type=str, required=True,
                         help="Type of build (debug, development, testomg. release)")
     parser.add_argument('--target-name', type=str, required=True,
-                        help="Type of build (debug, development, testomg. release)")
+                        help=f"Name of build target, e.g. {os.getenv(PROJECT_NAME_KEY)}Editor")
     parser.add_argument('--clean', action='store_true',
                         help="Clean selected targets")
     parser.add_argument('--build', action='store_true',

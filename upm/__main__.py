@@ -45,23 +45,32 @@ def main():
 
     subparsers = parser.add_subparsers(dest='command')
 
+    parser_setup = subparsers.add_parser('config', help='Copy upm configuration files to a destination folder.')
+    parser_setup.add_argument('--file', type=valid_file_path, help='Path to a starting config file.', default=None)
+    parser_setup.add_argument('--dir', type=create_directory, help='Destination folder (current directory if not specified).', default='.')
+    parser_setup.add_argument('--nogitignore', action='store_true', help='Skip adding UPM .gitignore file to destination folder.')
+    parser_setup.add_argument('--unreal', type=valid_dir_path, help='Specify Unreal Engine path. If not specified, the default install path for your platform will be used.')
+    parser_setup.add_argument('--project-name', type=str, help='Specify the name for your project. If not specified, the name of the current directory will be used.')
+    parser_setup.add_argument('--workspace', type=str, help='Specify the name for your VS Code workspace. If not specified, the name of the current directory will be used.')
+    parser_setup.add_argument('--changelog', type=str, help='Specify changelog filename.', default='Changelog.json')
+    parser_setup.add_argument('--clean', action='store_true', help='Remove UPM config files from destination folder.')
+
     parser_setup = subparsers.add_parser('setup', help='Run setup script.')
     parser_setup.add_argument('--clean', action='store_true', help='Clean generated project files.')
+    parser_setup.add_argument('--noprojfiles', action='store_true', help='Skip generating project files.')
+    parser_setup.add_argument('--novenv', action='store_true', help='Skip creating virtual environment.')
 
     parser_setup = subparsers.add_parser('install-vscode', help='Download and install Visual Studio Code.')
     parser_setup = subparsers.add_parser('install-vs', help='Download and install Visual Studio Community (prompts for admin privileges).')
     parser_setup = subparsers.add_parser('install-xcode', help='Download and install XCode.')
 
-    parser_setup = subparsers.add_parser('upmcopy', help='Copy upm files to a destination folder.')
-    parser_setup.add_argument('--dir', type=create_directory, help='Destination folder.', required=True)
-
     parser_setup = subparsers.add_parser('build', help='Build commands.')
     parser_setup.add_argument('--project-dir', type=str, required=True,
-                        help="Path to the Moonshot project directory")
+                        help="Path to the project directory")
     parser_setup.add_argument('--build-type', type=str, required=True,
                         help="Type of build (debug, development, testomg. release)")
     parser_setup.add_argument('--target-name', type=str, required=True,
-                        help="Type of build (debug, development, testomg. release)")
+                        help="Name of target to build")
     parser_setup.add_argument('--clean', action='store_true',
                         help="Clean selected targets")
     parser_setup.add_argument('--build', action='store_true',
@@ -71,7 +80,10 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == 'setup':
+    if args.command == 'config':
+        from upm.config import config
+        config(args)
+    elif args.command == 'setup':
         from upm.setup import setup
         setup(args)
 
@@ -93,9 +105,9 @@ def main():
             from upm.install_vs import install_visual_studio
             install_visual_studio()
     
-    elif args.command == 'upmcopy':
-        from upm.upmcopy import upmcopy
-        upmcopy(args)
+    elif args.command == 'upmconfig':
+        from upm.config import upmconfig
+        upmconfig(args)
     
     elif args.command == 'build':
         from upm.build import build_project

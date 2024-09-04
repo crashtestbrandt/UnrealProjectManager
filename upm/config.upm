@@ -1,0 +1,26 @@
+{
+    "Windows": {
+        "PROJECT_NAME": "LyraStarterGame",
+        "GAME_NAME": "LyraGame",
+        "EDITOR_NAME": "LyraEditor",
+        "WORKSPACE_NAME": "LyraStarterGame.code-workspace",
+        "UNREAL_PATH": "C:\\Program Files\\Epic Games\\UE_5.4",
+        "CHANGELOG_FILENAME": "Changelog.json"  
+    },
+    "Linux": {
+        "PROJECT_NAME": "LyraStarterGame",
+        "GAME_NAME": "LyraGame",
+        "EDITOR_NAME": "LyraEditor",
+        "WORKSPACE_NAME": "LyraStarterGame.code-workspace",
+        "UNREAL_PATH": "/home/username/.local/share/UnrealEngine",
+        "CHANGELOG_FILENAME": "Changelog.json"
+    },
+    "Darwin": {
+        "PROJECT_NAME": "LyraStarterGame",
+        "GAME_NAME": "LyraGame",
+        "EDITOR_NAME": "LyraEditor",
+        "WORKSPACE_NAME": "LyraStarterGame.code-workspace",
+        "UNREAL_PATH": "/Users/Shared/Epic Games/UE_5.4",
+        "CHANGELOG_FILENAME": "Changelog.json"
+    }
+}
