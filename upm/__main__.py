@@ -50,9 +50,10 @@ def main():
     parser_setup.add_argument('--dir', type=create_directory, help='Destination folder (current directory if not specified).', default='.')
     parser_setup.add_argument('--nogitignore', action='store_true', help='Skip adding UPM .gitignore file to destination folder.')
     parser_setup.add_argument('--unreal', type=valid_dir_path, help='Specify Unreal Engine path. If not specified, the default install path for your platform will be used.')
-    parser_setup.add_argument('--project-name', type=str, help='Specify the name for your project. If not specified, the name of the current directory will be used.')
+    parser_setup.add_argument('--project-name', type=str, help='Specify the name for your project. If not specified, the name of the project directory will be used.')
+    parser_setup.add_argument('--game-name', type=str, help='Specify the name for your game. Default: [project-name].')
+    parser_setup.add_argument('--editor-name', type=str, help='Specify the name for your editor target. Default: \'[game-name]Editor\'.')
     parser_setup.add_argument('--workspace', type=str, help='Specify the name for your VS Code workspace. If not specified, the name of the current directory will be used.')
-    parser_setup.add_argument('--changelog', type=str, help='Specify changelog filename.', default='Changelog.json')
     parser_setup.add_argument('--clean', action='store_true', help='Remove UPM config files from destination folder.')
 
     parser_setup = subparsers.add_parser('setup', help='Run setup script.')
@@ -77,6 +78,12 @@ def main():
                         help="Build selected targets")
     parser_setup.add_argument('--package', action='store_true',
                         help="Package selected target for deployment")
+    
+    parser_setup = subparsers.add_parser('changelog', help='Changelog commands.')
+    parser_setup.add_argument('--add-version', action='store_true', help='Add an incremented version to the changelog')
+    parser_setup.add_argument('--add-change', type=str, help='Add a change to the most recent version')
+    parser_setup.add_argument('--update-readme', action='store_true', help='Append changes to README.md')
+    parser_setup.add_argument('--update-ini', action='store_true', help='Copy the most recent version number Config/DefaultGame.ini')
 
     args = parser.parse_args()
 
@@ -119,6 +126,11 @@ def main():
             build=args.build,
             package=args.package
         )
+    
+    elif args.command == 'changelog':
+        from upm.changelog import changelog
+        changelog(args)
+
     else:
         parser.print_help()
 

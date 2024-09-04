@@ -30,14 +30,22 @@ PROJECT_DIR = './'
 CHANGELOG_FILE = os.path.join(PROJECT_DIR, 'Changelog.json')
 README_FILE = os.path.join(PROJECT_DIR, 'README.md')
 INI_FILE_PATH = os.path.join(PROJECT_DIR, 'Config', 'DefaultGame.ini')
+PRERELEASE_TYPE_KEY = 'PRERELEASE_TYPE'
 
 def load_changelog():
-    with open(CHANGELOG_FILE, 'r') as file:
-        return json.load(file)
+    if os.path.exists(CHANGELOG_FILE):
+        with open(CHANGELOG_FILE, 'r') as file:
+            return json.load(file)
+    else:
+        return None
 
 def save_changelog(changelog):
     changelog[-1]['ReleaseDate'] = datetime.now().strftime('%Y-%m-%d')
-    changelog[-1]['Commit'] = get_commit_hash()
+
+    commit = get_commit_hash()
+    if commit:
+        changelog[-1]['Commit'] = get_commit_hash()
+
     with open(CHANGELOG_FILE, 'w') as file:
         json.dump(changelog, file, indent=4)
 
@@ -59,7 +67,11 @@ def update_readme(changelog):
             file.write(f"- {change}\n")
 
 def get_commit_hash():
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode()
+    try:
+        output = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode()
+        return output
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
 
 def increment_version(version):
     major, minor, patch = map(int, version.split('.'))
@@ -68,15 +80,24 @@ def increment_version(version):
 
 def add_version():
     changelog = load_changelog()
-    latest_version = changelog[-1]['Version']
-    new_version = increment_version(latest_version)
+
+    if not changelog:
+        new_version = "0.0.1"
+        changelog = []
+    else:
+        new_version = increment_version(changelog[-1]['Version'])
+
     new_entry = {
         "Version": new_version,
-        "PrereleaseType": "Alpha",
+        "PrereleaseType": os.environ.get(PRERELEASE_TYPE_KEY),
         "ReleaseDate": datetime.now().strftime('%Y-%m-%d'),
-        "Commit": get_commit_hash(),
         "Changes": []
     }
+
+    commit = get_commit_hash()
+    if commit:
+        new_entry['Commit'] = commit
+
     changelog.append(new_entry)
     save_changelog(changelog)
 
@@ -115,15 +136,7 @@ def update_ini():
             else:
                 file.write(line)
 
-def main():
-    parser = argparse.ArgumentParser(description='Manage changelog')
-    parser.add_argument('--add-version', action='store_true', help='Add an incremented version to the changelog')
-    parser.add_argument('--add-change', type=str, help='Add a change to the most recent version')
-    parser.add_argument('--update-readme', action='store_true', help='Append changes to README.md')
-    parser.add_argument('--update-ini', action='store_true', help='Copy the most recent version number Config/DefaultGame.ini')
-
-    args = parser.parse_args()
-
+def changelog(args):
     if args.add_version:
         add_version()
     if args.add_change:
@@ -135,4 +148,12 @@ def main():
         update_ini()
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Manage changelog')
+    parser.add_argument('--add-version', action='store_true', help='Add an incremented version to the changelog')
+    parser.add_argument('--add-change', type=str, help='Add a change to the most recent version')
+    parser.add_argument('--update-readme', action='store_true', help='Append changes to README.md')
+    parser.add_argument('--update-ini', action='store_true', help='Copy the most recent version number Config/DefaultGame.ini')
+
+    args = parser.parse_args()
+
+    changelog(args)

@@ -5,7 +5,8 @@
         "EDITOR_NAME": "LyraEditor",
         "WORKSPACE_NAME": "LyraStarterGame.code-workspace",
         "UNREAL_PATH": "C:\\Program Files\\Epic Games\\UE_5.4",
-        "CHANGELOG_FILENAME": "Changelog.json"  
+        "CHANGELOG_FILENAME": "Changelog.json",
+        "PRERELEASE_TYPE": "Alpha"
     },
     "Linux": {
         "PROJECT_NAME": "LyraStarterGame",
@@ -13,7 +14,8 @@
         "EDITOR_NAME": "LyraEditor",
         "WORKSPACE_NAME": "LyraStarterGame.code-workspace",
         "UNREAL_PATH": "/home/username/.local/share/UnrealEngine",
-        "CHANGELOG_FILENAME": "Changelog.json"
+        "CHANGELOG_FILENAME": "Changelog.json",
+        "PRERELEASE_TYPE": "Alpha"
     },
     "Darwin": {
         "PROJECT_NAME": "LyraStarterGame",
@@ -21,6 +23,7 @@
         "EDITOR_NAME": "LyraEditor",
         "WORKSPACE_NAME": "LyraStarterGame.code-workspace",
         "UNREAL_PATH": "/Users/Shared/Epic Games/UE_5.4",
-        "CHANGELOG_FILENAME": "Changelog.json"
+        "CHANGELOG_FILENAME": "Changelog.json",
+        "PRERELEASE_TYPE": "Alpha"
     }
 }
