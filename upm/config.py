@@ -10,6 +10,7 @@ WORKSPACE_NAME_KEY = "WORKSPACE_NAME"
 GAME_NAME_KEY = "GAME_NAME"
 EDITOR_NAME_KEY = "EDITOR_NAME"
 CHANGELOG_FILENAME_KEY = "CHANGELOG_FILENAME"
+PRERELEASE_TYPE_KEY = "PRERELEASE_TYPE"
 
 CONFIG_FILENAME = "config.upm"
 GITIGNORE_SRCFILE = "gitignore.upm"
@@ -110,6 +111,9 @@ def config(args):
         config[system][EDITOR_NAME_KEY] = args.editor_name
     else:
         config[system][EDITOR_NAME_KEY] = f"{config[system][GAME_NAME_KEY]}Editor"
+    
+    if args.prerelease_type:
+        config['system'][PRERELEASE_TYPE_KEY] = args.prerelease_type
 
     if os.path.exists(os.path.join(args.dir, CONFIG_FILENAME)):
         print(f"Skipping create config file; UPM config file already exists at {os.path.join(args.dir, CONFIG_FILENAME)}")

@@ -187,7 +187,7 @@ You can access the launch configurations from the Run and Debug menu (*Ctrl+Shif
 
 ### Changelog
 
-
+To create a changelog file with an initial version (0.0.1), do 
 
 
 ## Collaboration Guide
