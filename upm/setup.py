@@ -491,15 +491,20 @@ def setup(args):
         sys.exit(0)
 
     venv_path = os.path.join(os.getcwd(), '.venv')
-    if os.path.exists(venv_path):
-        raise Exception(f"Virtual environment already exists at {venv_path}. Run with --clean to remove it.")
     
     requirements_file = os.path.join(os.getcwd(), 'upm', 'requirements.txt')
 
-    if not args.novenv:
+    if not args.novenv and not os.path.exists(venv_path):
+        print(f"No virtual environment found at {venv_path}.")
         create_virtualenv(venv_path)
+    else:
+        print(f"Skipping virtual environment creation.")
+    
+    if args.novenv:
+        print(f"Skipping dependency installation.")
+    else:
         install_dependencies(venv_path, requirements_file)
-
+        
     if not args.noprojfiles:
         generate_project_files(env_vars);
 

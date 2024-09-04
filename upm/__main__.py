@@ -66,11 +66,11 @@ def main():
 
     parser_setup = subparsers.add_parser('build', help='Build commands.')
     parser_setup.add_argument('--project-dir', type=str, required=True,
-                        help="Path to the Moonshot project directory")
+                        help="Path to the project directory")
     parser_setup.add_argument('--build-type', type=str, required=True,
                         help="Type of build (debug, development, testomg. release)")
     parser_setup.add_argument('--target-name', type=str, required=True,
-                        help="Type of build (debug, development, testomg. release)")
+                        help="Name of target to build")
     parser_setup.add_argument('--clean', action='store_true',
                         help="Clean selected targets")
     parser_setup.add_argument('--build', action='store_true',

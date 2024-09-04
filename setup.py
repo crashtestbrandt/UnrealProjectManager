@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='unreal-project-manager',
-    version='0.1.0',
+    version='0.1.2',
     packages=find_packages(where='.'),
     include_package_data=True,
     install_requires=[
@@ -18,7 +18,7 @@ setup(
     },
     author='Brandt Frazier',
     author_email='brandt@frazimuth.me',
-    description='A tool for managing Unreal Engine projects',
+    description='A lightweight Python module for managing Unreal projects across space, time, and platforms.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/crashtestbrandt/unrealprojectmanager',
@@ -27,5 +27,5 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent'
     ],
-    python_requires='>=3.6'
+    python_requires='>=3.10'
 )
