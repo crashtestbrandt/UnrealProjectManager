@@ -187,8 +187,30 @@ You can access the launch configurations from the Run and Debug menu (*Ctrl+Shif
 
 ### Changelog
 
-To create a changelog file with an initial version (0.0.1), do 
+**Initialize Changelog / Increment Version**
 
+To create a changelog file (*Changelog.json*) with an initial version (0.0.1), you can either:
+
+- Use the Build menu (*Ctrl+Shift+B*) to select *Changelog: Add Version*
+- Use the UPM CLI: `upm changelog --add-version`
+
+These same two commands can be used to increment the current version.
+
+**Add change**
+
+Add a change to the current version with either of the following:
+
+- Use the Build menu (*Ctrl+Shift+B*) to select *Changelog: Add Change* and enter a change note when prompted.
+- Use the UPM CLI: `upm changelog --add-version "Your change note."
+
+**Update DefaultGame.ini**
+
+Update the version in your project's *DefaultGame.ini* file with either:
+
+- Use the Build menu (*Ctrl+Shift+B*) to select *Changelog: Update INI File*.
+- Use the UPM CLI: `upm changelog --update-ini`
+
+For all options, do `upm changelog -h`.
 
 ## Collaboration Guide
 
@@ -208,6 +230,14 @@ This opens the Microsoft Store and prompts you install Python 3.12.
 
 ### Installing Unreal
 
+Download and install the latest release of Unreal Engine 5.4 through the [Epic Games Launcher](https://store.epicgames.com/en-US/download).
+
+Unreal Engine -> Library -> Engine Versions -> Add (+)
+
+Launch Unreal Engine 5.4. Select Fix if prompted to correct file associations.
+
 ### Starting an Unreal Project
+
+...
 
 
