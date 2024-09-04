@@ -7,6 +7,8 @@ from datetime import datetime
 UNREAL_PATH_KEY = "UNREAL_PATH"
 PROJECT_NAME_KEY = "PROJECT_NAME"
 WORKSPACE_NAME_KEY = "WORKSPACE_NAME"
+GAME_NAME_KEY = "GAME_NAME"
+EDITOR_NAME_KEY = "EDITOR_NAME"
 CHANGELOG_FILENAME_KEY = "CHANGELOG_FILENAME"
 
 CONFIG_FILENAME = "config.upm"
@@ -98,6 +100,16 @@ def config(args):
         config[system][WORKSPACE_NAME_KEY] = args.workspace
     else:
         config[system][WORKSPACE_NAME_KEY] = f"{os.path.basename(args.dir)}.code-workspace"
+    
+    if args.game_name:
+        config[system][GAME_NAME_KEY] = args.game_name
+    else:
+        config[system][GAME_NAME_KEY] = config[system][PROJECT_NAME_KEY]
+    
+    if args.editor_name:
+        config[system][EDITOR_NAME_KEY] = args.editor_name
+    else:
+        config[system][EDITOR_NAME_KEY] = f"{config[system][GAME_NAME_KEY]}Editor"
 
     if os.path.exists(os.path.join(args.dir, CONFIG_FILENAME)):
         print(f"Skipping create config file; UPM config file already exists at {os.path.join(args.dir, CONFIG_FILENAME)}")
@@ -105,21 +117,7 @@ def config(args):
         with open(os.path.join(args.dir, CONFIG_FILENAME), 'w') as f:
             json.dump(config, f, indent=4)
         print(f"Created UPM config file at {os.path.join(args.dir, CONFIG_FILENAME)}")
-    
-    if os.path.exists(os.path.join(args.dir, args.changelog)):
-        print(f"Skipping create changelog file; changelog file already exists at {os.path.join(args.dir, args.changelog)}")
-    else:
-        if args.changelog:
-            config[system][CHANGELOG_FILENAME_KEY] = args.changelog
-            changelog_stub = [{
-                "Version": "0.0.0",
-                "PrereleaseType": "Alpha",
-                "ReleaseDate": datetime.now().strftime('%Y-%m-%d'),
-                "Changes": [],
-            }]
-            with open(os.path.join(args.dir, args.changelog), 'w') as f:
-                json.dump(changelog_stub, f, indent=4)
-                print(f"Created changelog file with v.0.0.0 at {os.path.join(args.dir, args.changelog)}")
+
     
     print(f"Configuration complete. Navigate to {args.dir} and run 'upm setup' to complete setup.")
     
